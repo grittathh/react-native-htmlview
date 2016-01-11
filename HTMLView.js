@@ -73,25 +73,8 @@ function htmlToElement(rawHtml, opts, done) {
           }
         }
 
-        var postParagraphString = null;
-        // if(node.name == 'p' && index < list.length-1) {
-        //   postParagraphString = PARAGRAPH_BREAK;
-        // }
         if(node.name == 'p') {
-          postParagraphString = PARAGRAPH_BREAK;
         }
-        // if(node.name == 'p') {
-
-        //   var tempNode = node;
-        //   while(tempNode.next != null) {
-        //     tempNode = tempNode.next;
-        //     console.log(tempNode.type);
-        //     if(tempNode.type != "text")
-        //       break;
-        //   }
-        //   if(tempNode.name == 'ul')
-        //     postParagraphString = null;
-        // }
 
         return (
           <Text key={index} 
@@ -102,12 +85,6 @@ function htmlToElement(rawHtml, opts, done) {
             {domToElement(node.children, node)}
             {node.name == 'br' ? LINE_BREAK : null}
             {node.name == 'hr' ? "horizontal-rule not implemented yet\n" : null}
-            {postParagraphString}
-            {node.name == 'h1' || 
-             node.name == 'h2' || 
-             node.name == 'h3' || 
-             node.name == 'h4' || 
-             node.name == 'h5' ? PARAGRAPH_BREAK : null}
            </Text>
         )
       }
