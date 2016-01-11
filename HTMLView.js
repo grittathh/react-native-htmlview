@@ -6,6 +6,7 @@ var {
   StyleSheet,
   Text,
   View,
+  PixelRatio,
 } = React
 
 var LINE_BREAK = '\n'
@@ -76,6 +77,9 @@ function htmlToElement(rawHtml, opts, done) {
         if(node.name == 'p') {
         }
 
+        if(node.name == 'hr')
+          return( <View style={ opts.styles.hr } /> )
+
         return (
           <Text key={index} 
                 onPress={linkPressHandler}
@@ -84,7 +88,6 @@ function htmlToElement(rawHtml, opts, done) {
             {node.name == 'li' ? preListString : null}
             {domToElement(node.children, node)}
             {node.name == 'br' ? LINE_BREAK : null}
-            {node.name == 'hr' ? "horizontal-rule not implemented yet\n" : null}
            </Text>
         )
       }
@@ -163,6 +166,12 @@ var baseStyles = StyleSheet.create({
     fontWeight: '500',
     color: '#007AFF',
   },
+  hr: {
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    height: 1 / PixelRatio.get(),
+    marginLeft: 0,
+    marginRight: 0,
+  }
 })
 
 module.exports = HTMLView
