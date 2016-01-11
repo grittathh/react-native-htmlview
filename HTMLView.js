@@ -6,6 +6,7 @@ var {
   StyleSheet,
   Text,
   View,
+  Image,
   PixelRatio,
 } = React
 
@@ -43,6 +44,16 @@ function htmlToElement(rawHtml, opts, done) {
           linkPressHandler = () => opts.linkHandler(entities.decodeHTML(node.attribs.href))
         }
 
+        if (node.name == 'img') {
+          return(
+            <Image
+              key={node.attribs.alt}
+              style={{width: 400, height: 400}} //need to get correct image size
+              resizeMode={Image.resizeMode.contain}
+              source={{uri: node.attribs.src}} />
+          )
+        }
+
         var preListString = "";
         if(node.name == 'li') {
           //go back up tree to find how many 'ul' tags there are
@@ -75,6 +86,16 @@ function htmlToElement(rawHtml, opts, done) {
         }
 
         if(node.name == 'p') {
+          //This is the place to get non-image Component types into the ScrollView
+          if(node.children[0].name == 'img') {
+            return(
+             <View  key={index} 
+                    onPress={linkPressHandler}
+                    style={{backgroundColor: '#ccffe6'}} >
+              {domToElement(node.children, node)}
+            </View>
+            )
+          }
         }
 
         if(node.name == 'hr')
