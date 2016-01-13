@@ -1,6 +1,7 @@
 var htmlparser = require('./vendor/htmlparser2')
 var entities = require('./vendor/entities')
 var React = require('react-native')
+var reactNativeGrid = require('react-native-grid');
 var {
   LinkingIOS,
   StyleSheet,
