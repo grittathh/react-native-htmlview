@@ -192,16 +192,35 @@ function htmlToElement(rawHtml, opts, done) {
           }
         }
 
+        if(node.name == 'pre') {
+          return(
+           <View  key={index} 
+                  onPress={linkPressHandler}
+                  style={{paddingLeft: 50}} >
+              <Text >
+                {domToElement(node.children, node)}
+              </Text>
+          </View>
+          )
+        }
+
         if(node.name == 'hr')
           return( <View style={ opts.styles.hr } /> )
+
+        var backgroundColor = null;
+
+        if(node.name == 'mark')
+          backgroundColor = 'yellow';
 
         return (
           <Text key={index} 
                 onPress={linkPressHandler}
-                style={{backgroundColor: '#ffe5e5'}} >
+                style={{backgroundColor: backgroundColor}}>
             {node.name == 'pre' ? LINE_BREAK : null}
             {node.name == 'li' ? preListString : null}
+            {node.name == 'q' ? "\"" : null}
             {domToElement(node.children, node)}
+            {node.name == 'q' ? "\"" : null}
             {node.name == 'br' ? LINE_BREAK : null}
            </Text>
         )
@@ -286,7 +305,13 @@ var baseStyles = StyleSheet.create({
     height: 1 / PixelRatio.get(),
     marginLeft: 0,
     marginRight: 0,
-  }
+  },
+  del: {
+    textDecorationLine: "line-through",
+  },
+  u: {
+    textDecorationLine: "underline",
+  },
 })
 
 module.exports = HTMLView
