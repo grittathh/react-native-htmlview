@@ -2,6 +2,8 @@ var htmlparser = require('./vendor/htmlparser2')
 var entities = require('./vendor/entities')
 var React = require('react-native')
 var reactNativeGrid = require('react-native-grid');
+var { Grid,Col } = reactNativeGrid;
+
 var {
   LinkingIOS,
   StyleSheet,
@@ -45,6 +47,97 @@ function htmlToElement(rawHtml, opts, done) {
           linkPressHandler = () => opts.linkHandler(entities.decodeHTML(node.attribs.href))
         }
 
+        if(node.name == 'table') {
+          //find number of rows
+
+          var thead = node.children.filter((child) => {return child.name === 'thead'});
+          thead = thead[0];
+          var tbody = node.children.filter((child) => {return child.name === 'tbody'});
+          tbody = tbody[0];
+
+          //find number of columns
+          console.log(thead);
+          var tr = thead.children.filter((child) => {
+            if(child.type === 'tag')
+              return child.name === 'tr';
+          });
+          tr = tr[0];
+
+          var th = tr.children.filter((child) => {
+            if(child.type === 'tag')
+              return child.name === 'th';
+          });
+
+          var numColumns = th.length;
+          var colSpan = 24 / numColumns; // react-native-grid arbitrarily defines 100% width to be 24 'units'
+
+
+          console.log("numColumns: " + numColumns);
+          console.log("colSpan: " + colSpan);
+
+          var finalCells = [];
+
+          th.map((thItem) => {
+            finalCells.push({
+              children: thItem.children,
+              align: thItem.attribs.style,
+              index: finalCells.length,
+              weight: 'bold',
+            })
+          })
+
+          var tr = tbody.children.filter((child) => {
+            if(child.type === 'tag')
+              return child.name === 'tr';
+          })
+
+          tr.map((trItem) => {
+            trItem.children.map((child) => {
+              if(child.type === 'tag')
+                if(child.name === 'td') {
+                  finalCells.push({
+                    children: child.children,
+                    align: child.attribs.style,
+                    index: finalCells.length,
+                    weight: 'normal',
+                  })
+                }
+            })
+          })
+
+          return (
+            <Grid key={index} 
+                  style={{paddingLeft: 50, paddingRight: 50}} >
+              {finalCells.map((cell) => {
+                var textAlignString = 'left';
+
+                if(cell.align !== undefined) {
+                  textAlignString = cell.align.split(':');
+                  textAlignString = textAlignString.slice(textAlignString.length - 1, textAlignString.length);
+                  textAlignString = textAlignString[0];
+                }
+
+                var borderTopWidth = null;
+                if(cell.index < numColumns)
+                  borderTopWidth = 0;
+
+                return(
+                  <Col  key={cell.text + String(cell.index)} 
+                        span={colSpan}
+                        style={{borderTopWidth: borderTopWidth, borderBottomWidth: 1,
+                                borderColor: 'gray', 
+                                padding: 5 }}>
+                    <Text style={{textAlign: textAlignString,
+                                  fontWeight: cell.weight}} >
+                      {domToElement(cell.children, cell)}
+                    </Text>
+                  </Col>
+                );
+              })}
+            </Grid>
+          )
+        }
+        
         if (node.name == 'img') {
           return(
             <Image
