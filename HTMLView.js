@@ -194,13 +194,13 @@ function htmlToElement(rawHtml, opts, done) {
 
         if(node.name == 'pre') {
           return(
-           <View  key={index} 
+            <View  key={index} 
                   onPress={linkPressHandler}
                   style={{paddingLeft: 50}} >
               <Text >
                 {domToElement(node.children, node)}
               </Text>
-          </View>
+            </View>
           )
         }
 
@@ -222,7 +222,7 @@ function htmlToElement(rawHtml, opts, done) {
             {domToElement(node.children, node)}
             {node.name == 'q' ? "\"" : null}
             {node.name == 'br' ? LINE_BREAK : null}
-           </Text>
+          </Text>
         )
       }
     })
