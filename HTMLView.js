@@ -185,7 +185,7 @@ function htmlToElement(rawHtml, opts, done) {
             return(
              <View  key={index} 
                     onPress={linkPressHandler}
-                    style={{backgroundColor: '#ccffe6'}} >
+                    style={{backgroundColor: null}} >
               {domToElement(node.children, node)}
             </View>
             )
