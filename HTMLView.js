@@ -1,8 +1,8 @@
 var htmlparser = require('./vendor/htmlparser2')
 var entities = require('./vendor/entities')
 var React = require('react-native')
-var reactNativeGrid = require('react-native-grid');
-var { Grid,Col } = reactNativeGrid;
+var Grid = require('./grid');
+var Col = require('./col');
 
 var {
   LinkingIOS,
@@ -56,7 +56,6 @@ function htmlToElement(rawHtml, opts, done) {
           tbody = tbody[0];
 
           //find number of columns
-          console.log(thead);
           var tr = thead.children.filter((child) => {
             if(child.type === 'tag')
               return child.name === 'tr';
@@ -69,11 +68,7 @@ function htmlToElement(rawHtml, opts, done) {
           });
 
           var numColumns = th.length;
-          var colSpan = 24 / numColumns; // react-native-grid arbitrarily defines 100% width to be 24 'units'
-
-
-          console.log("numColumns: " + numColumns);
-          console.log("colSpan: " + colSpan);
+          var colSpan = 24 / numColumns; //24 = full-width
 
           var finalCells = [];
 
@@ -107,7 +102,7 @@ function htmlToElement(rawHtml, opts, done) {
 
           return (
             <Grid key={index} 
-                  style={{paddingLeft: 50, paddingRight: 50}} >
+                  style={{paddingLeft: 100, paddingRight: 100}} >
               {finalCells.map((cell) => {
                 var textAlignString = 'left';
 
