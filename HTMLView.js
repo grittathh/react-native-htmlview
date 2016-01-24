@@ -1,8 +1,8 @@
 var htmlparser = require('./vendor/htmlparser2')
 var entities = require('./vendor/entities')
 var React = require('react-native')
-var Grid = require('./grid');
-var Col = require('./col');
+var Grid = require('./Grid');
+var Cell = require('./Cell');
 
 var {
   LinkingIOS,
@@ -100,37 +100,46 @@ function htmlToElement(rawHtml, opts, done) {
             })
           })
 
+          finalCells = finalCells.map((cell) => {
+            var textAlignString = 'left';
+
+            if(cell.align !== undefined) {
+              textAlignString = cell.align.split(':');
+              textAlignString = textAlignString.slice(textAlignString.length - 1, textAlignString.length);
+              textAlignString = textAlignString[0];
+            }
+
+            var borderTopWidth = null;
+            if(cell.index < numColumns)
+              borderTopWidth = 0;
+
+            var colIndex = 1 + cell.index - numColumns*Math.floor(cell.index / numColumns);
+            var rowIndex = Math.ceil((1 + cell.index) / numColumns);
+
+            cell.colIndex = colIndex;
+            cell.rowIndex = rowIndex;            
+            cell.colSpan = colSpan;
+            cell.textAlignString = textAlignString;
+            cell.borderTopWidth = borderTopWidth;
+            cell.content = () => {
+              return (
+                <Text style={{textAlign: cell.textAlignString,
+                              fontWeight: cell.weight}} >
+                  {domToElement(cell.children, cell)}
+                </Text>
+              )
+            }
+
+            return cell;
+          });
+
+
           return (
             <Grid key={index}
-                  style={{paddingLeft: 100, paddingRight: 100}} >
-              {finalCells.map((cell) => {
-                var textAlignString = 'left';
-
-                if(cell.align !== undefined) {
-                  textAlignString = cell.align.split(':');
-                  textAlignString = textAlignString.slice(textAlignString.length - 1, textAlignString.length);
-                  textAlignString = textAlignString[0];
-                }
-
-                var borderTopWidth = null;
-                if(cell.index < numColumns)
-                  borderTopWidth = 0;
-
-                return(
-                  <Col  key={cell.text + String(cell.index)}
-                        span={colSpan}
-                        style={{borderTopWidth: borderTopWidth, borderBottomWidth: 1,
-                                borderColor: 'gray',
-                                padding: 5 }}>
-                    <Text style={{textAlign: textAlignString,
-                                  fontWeight: cell.weight}} >
-                      {domToElement(cell.children, cell)}
-                    </Text>
-                  </Col>
-                );
-              })}
-            </Grid>
-          )
+                  style={{paddingLeft: 0, paddingRight: 0}}
+                  allCells={finalCells}
+                  numColumns={numColumns}
+                  numRows={finalCells.length / numColumns} /> );
         }
 
         if (node.name == 'img') {
