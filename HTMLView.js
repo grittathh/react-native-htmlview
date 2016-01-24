@@ -32,7 +32,7 @@ function htmlToElement(rawHtml, opts, done) {
 
       if (node.type == 'text') {
         if(node.data == "\n")
-          return (<Text key={index} style={{fontSize: 8}}>{node.data}</Text>);
+          return (<Text key={index} style={{fontSize: 6}}>{node.data}</Text>);
 
         return (
           <Text key={index} style={parent ? opts.styles[parent.name] : null}>
@@ -101,7 +101,7 @@ function htmlToElement(rawHtml, opts, done) {
           })
 
           return (
-            <Grid key={index} 
+            <Grid key={index}
                   style={{paddingLeft: 100, paddingRight: 100}} >
               {finalCells.map((cell) => {
                 var textAlignString = 'left';
@@ -117,10 +117,10 @@ function htmlToElement(rawHtml, opts, done) {
                   borderTopWidth = 0;
 
                 return(
-                  <Col  key={cell.text + String(cell.index)} 
+                  <Col  key={cell.text + String(cell.index)}
                         span={colSpan}
                         style={{borderTopWidth: borderTopWidth, borderBottomWidth: 1,
-                                borderColor: 'gray', 
+                                borderColor: 'gray',
                                 padding: 5 }}>
                     <Text style={{textAlign: textAlignString,
                                   fontWeight: cell.weight}} >
@@ -132,7 +132,7 @@ function htmlToElement(rawHtml, opts, done) {
             </Grid>
           )
         }
-        
+
         if (node.name == 'img') {
           return(
             <Image
@@ -144,16 +144,12 @@ function htmlToElement(rawHtml, opts, done) {
         }
 
         var preListString = "";
-        if(node.name == 'li') {
-          //go back up tree to find how many 'ul' tags there are
-          //where number of UL tags = indentation level
-
+        if(node.name == "li") {
           var tempNode = node;
           var numIndentationLevels = 0;
           while(tempNode.parent != null) {
             if(tempNode.parent.name == 'ul') {
               numIndentationLevels = numIndentationLevels + 1;
-              preListString = "    " + preListString;
             }
 
             tempNode = tempNode.parent;
@@ -172,13 +168,40 @@ function htmlToElement(rawHtml, opts, done) {
             default:
               preListString = preListString + BULLET;
           }
+
+          var listChildren = node.children;
+
+          return(
+            <View style={{flexDirection: 'row'}} >
+              <View style={{backgroundColor: null,
+                            paddingLeft: (numIndentationLevels)*2,
+                            paddingRight: 2}} >
+                <Text style={opts.styles.li}>{preListString}</Text>
+              </View>
+              <View key={index}
+                    onPress={linkPressHandler}
+                    style={{backgroundColor: null, flex: 1}} >
+                {domToElement(node.children, node)}
+              </View>
+            </View>
+          )
+        }
+
+        if(node.name == 'ul') {
+          return (
+            <View key={index}
+                  onPress={linkPressHandler}
+                  style={{backgroundColor: backgroundColor}}>
+              {domToElement(node.children, node)}
+            </View>
+          )
         }
 
         if(node.name == 'p') {
           //This is the place to get non-image Component types into the ScrollView
           if(node.children[0].name == 'img') {
             return(
-             <View  key={index} 
+             <View  key={index}
                     onPress={linkPressHandler}
                     style={{backgroundColor: null}} >
               {domToElement(node.children, node)}
@@ -189,7 +212,7 @@ function htmlToElement(rawHtml, opts, done) {
 
         if(node.name == 'pre') {
           return(
-            <View  key={index} 
+            <View  key={index}
                   onPress={linkPressHandler}
                   style={{paddingLeft: 50}} >
               <Text >
@@ -208,11 +231,10 @@ function htmlToElement(rawHtml, opts, done) {
           backgroundColor = 'yellow';
 
         return (
-          <Text key={index} 
+          <Text key={index}
                 onPress={linkPressHandler}
                 style={{backgroundColor: backgroundColor}}>
             {node.name == 'pre' ? LINE_BREAK : null}
-            {node.name == 'li' ? preListString : null}
             {node.name == 'q' ? "\"" : null}
             {domToElement(node.children, node)}
             {node.name == 'q' ? "\"" : null}
