@@ -1,36 +1,44 @@
 {
-  "name": "react-native-htmlview",
-  "version": "0.1.4",
-  "description": "A component which renders HTML content as native views",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "author": {
+    "email": "grittathh@gmail.com",
+    "name": "James Liao"
   },
-  "author": "James Liao <grittathh@gmail.com>",
-  "license": "ISC",
-  "keywords": [
-    "react",
-    "html",
-    "react-native",
-    "react-component",
-    "react-native-component",
-    "mobile",
-    "ui"
-  ],
+  "bugs": {
+    "url": "https://github.com/grittathh/react-native-htmlview/issues"
+  },
+  "dependencies": {},
+  "description": "A component which renders HTML content as native views",
+  "devDependencies": {},
   "files": [
-    "index.js",
     "HTMLView.js",
     "Cell.js",
     "Grid.js",
+    "index.js",
     "vendor/"
   ],
+  "gitHead": "f5561e5c66c8b8324878311d25a0569eb78af8e0",
+  "homepage": "https://github.com/grittathh/react-native-htmlview#readme",
+  "keywords": [
+    "html",
+    "mobile",
+    "react",
+    "react-component",
+    "react-native",
+    "react-native-component",
+    "ui"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "react-native-htmlview",
+  "optionalDependencies": {},
+  "readme": "# React Native HTMLView\nA component which takes HTML content and renders it as native views, with \ncustomisable style and handling of links, etc.\n\n### usage\n\nprops:\n\n- `value`: a string of HTML content to render\n- `onLinkPress`: a function which will be called with a url when a link is pressed.\n  Passing this prop will override how links are handled (defaults to calling `LinkingIOS.openURL(url)`)\n- `stylesheet`: a stylesheet object keyed by tag name, which will override the \n  styles applied to those respective tags.\n- `renderNode`: a custom function to render HTML nodes however you see fit. If \n  the function returns `undefined` (not `null`), the default renderer will be \n  used for that node.\n\nNote: see the [troubleshooting](#troubleshooting) section below if you're having problems with links not working.\n\n### example\n\n```js\nvar React = require('react-native')\nvar {Text, View, ListView} = React\n\nvar HTMLView = require('react-native-htmlview')\n\nvar ContentView = React.createClass({\n  render() {\n    return (\n      var htmlContent = '<p><a href=\"\">&hearts; nice job!</a></p>'\n      <HTMLView\n        value={htmlContent}\n        onLinkPress={(url) => console.log('navigating to: ', url)}\n        stylesheet={styles}\n      />\n    )\n  }\n})\n\nvar styles = StyleSheet.create({\n  a: {\n    fontWeight: '300',\n    color: '#FF3366', // pink links\n  },\n})\n```\n\n### screenshot\n\nIn action (from [ReactNativeHackerNews](https://github.com/jsdf/ReactNativeHackerNews)):\n\n![React Native Hacker News Comments](http://i.imgur.com/FYOgBYc.png)\n\n### troubleshooting\n\n If you're getting the error \"undefined is not an object (evaluating 'RCTLinkingManager.openURL’)” from the LinkingIOS API, try adding ‘RCTLinking' to the project's 'Linked Frameworks and Libraries’. You might have to find RCTLinking.xcodeproj in the react-native package dir and drag that into your main Xcode project first.\n\n![Under Construction](https://jamesfriend.com.au/files/under-construction.gif)\n\nI just wrote this... use at your own risk. Not API stable.\n",
+  "readmeFilename": "README.md",
   "repository": {
     "type": "git",
     "url": "git://github.com/grittathh/react-native-htmlview.git"
   },
-  "_shasum": "1c8d7ffd80bed45e750a569b988d45936396fa00",
-  "_resolved": "https://github.com/grittathh/react-native-htmlview/tarball/master",
-  "_from": "https://github.com/grittathh/react-native-htmlview/tarball/master",
-  "dependencies": {
-  }
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.1.5"
 }
