@@ -117,7 +117,7 @@ function htmlToElement(rawHtml, opts, done) {
             var rowIndex = Math.ceil((1 + cell.index) / numColumns);
 
             cell.colIndex = colIndex;
-            cell.rowIndex = rowIndex;            
+            cell.rowIndex = rowIndex;
             cell.colSpan = colSpan;
             cell.textAlignString = textAlignString;
             cell.borderTopWidth = borderTopWidth;
@@ -145,7 +145,7 @@ function htmlToElement(rawHtml, opts, done) {
         if (node.name == 'img') {
           return(
             <Image
-              key={node.attribs.alt}
+              key={index}
               style={{width: 400, height: 400}} //need to get correct image size
               resizeMode={Image.resizeMode.contain}
               source={{uri: node.attribs.src}} />
@@ -181,14 +181,13 @@ function htmlToElement(rawHtml, opts, done) {
           var listChildren = node.children;
 
           return(
-            <View style={{flexDirection: 'row'}} >
+            <View key={index} style={{flexDirection: 'row'}} >
               <View style={{backgroundColor: null,
                             paddingLeft: (numIndentationLevels)*2,
                             paddingRight: 2}} >
                 <Text style={opts.styles.li}>{preListString}</Text>
               </View>
-              <View key={index}
-                    onPress={linkPressHandler}
+              <View onPress={linkPressHandler}
                     style={{backgroundColor: null, flex: 1}} >
                 {domToElement(node.children, node)}
               </View>
@@ -221,10 +220,10 @@ function htmlToElement(rawHtml, opts, done) {
 
         if(node.name == 'pre') {
           return(
-            <View  key={index}
+            <View key={index}
                   onPress={linkPressHandler}
                   style={{paddingLeft: 50}} >
-              <Text >
+              <Text>
                 {domToElement(node.children, node)}
               </Text>
             </View>
@@ -232,7 +231,7 @@ function htmlToElement(rawHtml, opts, done) {
         }
 
         if(node.name == 'hr')
-          return( <View style={ opts.styles.hr } /> )
+          return( <View key={index} style={ opts.styles.hr } /> )
 
         var backgroundColor = null;
 
