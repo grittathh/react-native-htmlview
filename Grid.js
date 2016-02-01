@@ -108,6 +108,7 @@ class Grid extends Component {
   finalizeColumnWidths() {
     var viewWidth = this.state.viewWidth;
     if(viewWidth === null) {
+      console.log(this.state);
       console.log("error, this should not happen, viewWidth can't be null at this point.");
       return;
     }
@@ -156,6 +157,9 @@ class Grid extends Component {
 		let GridComponent = self.state.gridRows.map((row,index) => {
 			let content = row.map((cell) => {return (self.renderIndividualCell(cell)) });
 
+      if(this.state.viewWidth === null)
+        content = null;
+
       return (
 				<Row  key={index}
               style={[styles.row, self.props.style, {
@@ -175,9 +179,6 @@ class Grid extends Component {
             var {x, y, width, height} = event.nativeEvent.layout;
 
             if(this.state.viewWidth !== width) {
-              console.log('width: ' + width);
-              console.log('height: ' + height);
-
               this.setState({
                 viewWidth: width,
               });
