@@ -31,8 +31,10 @@ function htmlToElement(rawHtml, opts, done) {
       }
 
       if (node.type == 'text') {
-        if(node.data == "\n")
-          return (<Text key={index} style={{fontSize: 6}}>{node.data}</Text>);
+        if(node.data == "\n") {
+          // return (<Text key={index} style={{fontSize: 6}}>{node.data+"\\n"}</Text>);
+          return null;
+        }
 
         return (
           <Text key={index} style={parent ? opts.styles[parent.name] : null}>
@@ -42,7 +44,9 @@ function htmlToElement(rawHtml, opts, done) {
       }
 
       if (node.type == 'tag') {
-        var linkPressHandler = null
+        var linkPressHandler = null;
+        var paddingTop = 15;
+
         if (node.name == 'a' && node.attribs && node.attribs.href) {
           linkPressHandler = () => opts.linkHandler(entities.decodeHTML(node.attribs.href))
         }
@@ -135,11 +139,12 @@ function htmlToElement(rawHtml, opts, done) {
 
 
           return (
-            <Grid key={index}
-                  style={{paddingLeft: 0, paddingRight: 0}}
-                  allCells={finalCells}
-                  numColumns={numColumns}
-                  numRows={finalCells.length / numColumns} /> );
+            <View key={index} style={{paddingTop: paddingTop}}>
+              <Grid allCells={finalCells}
+                    numColumns={numColumns}
+                    numRows={finalCells.length / numColumns} />
+            </View>
+          );
         }
 
         if (node.name == 'img') {
@@ -195,23 +200,27 @@ function htmlToElement(rawHtml, opts, done) {
           )
         }
 
+
+
         if(node.name == 'ul') {
+          paddingTop = 0;
           return (
             <View key={index}
                   onPress={linkPressHandler}
-                  style={{backgroundColor: backgroundColor}}>
+                  style={{paddingTop: paddingTop, backgroundColor: backgroundColor}}>
               {domToElement(node.children, node)}
             </View>
           )
         }
 
         if(node.name == 'p') {
+          paddingTop = paddingTop / 2;
           //This is the place to get non-image Component types into the ScrollView
           if(node.children[0].name == 'img') {
             return(
              <View  key={index}
                     onPress={linkPressHandler}
-                    style={{backgroundColor: null}} >
+                    style={{paddingTop: paddingTop, backgroundColor: null}} >
               {domToElement(node.children, node)}
             </View>
             )
@@ -222,7 +231,7 @@ function htmlToElement(rawHtml, opts, done) {
           return(
             <View key={index}
                   onPress={linkPressHandler}
-                  style={{paddingLeft: 50}} >
+                  style={{paddingTop: paddingTop, paddingLeft: 50}} >
               <Text>
                 {domToElement(node.children, node)}
               </Text>
@@ -241,7 +250,7 @@ function htmlToElement(rawHtml, opts, done) {
         return (
           <Text key={index}
                 onPress={linkPressHandler}
-                style={{backgroundColor: backgroundColor}}>
+                style={{paddingTop: paddingTop, backgroundColor: backgroundColor}}>
             {node.name == 'pre' ? LINE_BREAK : null}
             {node.name == 'q' ? "\"" : null}
             {domToElement(node.children, node)}
