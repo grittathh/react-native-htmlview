@@ -20,13 +20,13 @@ var CIRCLEBULLET = '\u29BF '
 var WHITEBULLET = '\u25E6 '
 var TRIANGLEBULLET = '\u2023 '
 
-function htmlToElement(rawHtml, opts, done) {
+function htmlToElement(rawHtml, opts, done, context) {
   function domToElement(dom, parent) {
     if (!dom) return null
 
     return dom.map((node, index, list) => {
       if (opts.customRenderer) {
-        var rendered = opts.customRenderer(node, index, list)
+        var rendered = opts.customRenderer(node, index, list, opts.viewport)
         if (rendered || rendered === null) return rendered
       }
 
@@ -272,9 +272,9 @@ function htmlToElement(rawHtml, opts, done) {
 }
 
 var HTMLView = React.createClass({
-  mixins: [
-    React.addons.PureRenderMixin,
-  ],
+  // mixins: [
+  //   React.addons.PureRenderMixin,
+  // ],
   getDefaultProps() {
     return {
       onLinkPress: LinkingIOS.openURL,
@@ -292,26 +292,63 @@ var HTMLView = React.createClass({
   componentDidMount() {
     this.startHtmlRender()
   },
-  startHtmlRender() {
+  shouldComponentUpdate(nextProps,nextState) {
+    if(this.state.element !== nextState.element) {
+      return true;
+    }
+
+    if(nextProps.viewport.width !== this.props.viewport.width ||
+       nextProps.viewport.height !== this.props.viewport.height) {
+      console.log("*****this.props.width/height: " + this.props.viewport.width + "/" + this.props.viewport.height);
+      console.log("*****nextProps.width/height: " + nextProps.viewport.width + "/" + nextProps.viewport.height);
+      console.log("*****re-rendering everything");
+
+      this.previousCallWasUpdate = true;
+      this.startHtmlRender(nextProps.viewport);
+      return false;
+    }
+
+    return false;
+  },
+  startHtmlRender(newViewport) {
     if (!this.props.value) return
     if (this.renderingHtml) return
+
+    if(newViewport === undefined) {
+      newViewport = this.props.viewport;
+    }
+
+    // console.log("****** startHtmlRender with viewport width/height: " + newViewport.width + "/" + newViewport.height);
+    // var d1 = new Date().getTime();
 
     var opts = {
       linkHandler: this.props.onLinkPress,
       styles: Object.assign({}, baseStyles, this.props.stylesheet),
       customRenderer: this.props.renderNode,
+      viewport: newViewport,
     }
 
     this.renderingHtml = true
     htmlToElement(this.props.value, opts, (err, element) => {
+      // var d2 = new Date().getTime();
+      // var time = d2-d1;
+      // console.log("****** finished HTML render: htmlToElement total time in ms: " + time);
+
       this.renderingHtml = false
 
       if (err) return (this.props.onError || console.error)(err)
 
       if (this.isMounted()) this.setState({element})
-    })
+    },this)
   },
   render() {
+    if(this.renderCount === undefined) {
+      this.renderCount = 1;
+    } else {
+      this.renderCount++;
+    }
+    console.log("HTMLView renderCount: " + this.renderCount);
+
     if (this.state.element) {
       return <View children={this.state.element} />
     }
