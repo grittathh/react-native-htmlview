@@ -185,22 +185,42 @@ function htmlToElement(rawHtml, opts, done, context) {
 
           var listChildren = node.children;
 
+          var containsNestedList = false;
+          listChildren.map((child) => {
+            console.log(child.type)
+            if(child.type == 'tag') {
+              if(child.name == "ul") {
+                containsNestedList = true;                
+              }
+            }
+          })
+
+          var childrenViews = null;
+          if(containsNestedList) {
+            childrenViews = <View onPress={linkPressHandler}
+                                  style={{backgroundColor: null, flex: 1}} >
+                              {domToElement(node.children, node)}
+                            </View>
+          } else {
+            childrenViews = <Text onPress={linkPressHandler}
+                                  style={{backgroundColor: null, flex: 1}} >
+                              {domToElement(node.children, node)}
+                            </Text>
+          }
+
           return(
-            <View key={index} style={{flexDirection: 'row'}} >
-              <View style={{backgroundColor: null,
-                            paddingLeft: (numIndentationLevels)*2,
-                            paddingRight: 2}} >
-                <Text style={opts.styles.li}>{preListString}</Text>
-              </View>
-              <View onPress={linkPressHandler}
-                    style={{backgroundColor: null, flex: 1}} >
-                {domToElement(node.children, node)}
-              </View>
+            <View key={index} style={{flexDirection: 'row', flexWrap: 'wrap'}} >
+                <Text style={[opts.styles.li, {
+                  backgroundColor: null,
+                  paddingLeft: (numIndentationLevels)*2,
+                  paddingRight: 2
+                }]}>{preListString}</Text>
+              {childrenViews}
             </View>
           )
         }
 
-
+        var backgroundColor = null;
 
         if(node.name == 'ul') {
           paddingTop = 0;
@@ -215,6 +235,7 @@ function htmlToElement(rawHtml, opts, done, context) {
 
         if(node.name == 'p') {
           paddingTop = paddingTop / 2;
+
           //This is the place to get non-image Component types into the ScrollView
           if(node.children[0].name == 'img') {
             return(
@@ -241,8 +262,6 @@ function htmlToElement(rawHtml, opts, done, context) {
 
         if(node.name == 'hr')
           return( <View key={index} style={ opts.styles.hr } /> )
-
-        var backgroundColor = null;
 
         if(node.name == 'mark')
           backgroundColor = 'yellow';
