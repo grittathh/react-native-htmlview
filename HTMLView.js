@@ -46,6 +46,7 @@ function htmlToElement(rawHtml, opts, done, context) {
       if (node.type == 'tag') {
         var linkPressHandler = null;
         var paddingTop = 15;
+        var paddingBottom = 0;
 
         if (node.name == 'a' && node.attribs && node.attribs.href) {
           linkPressHandler = () => opts.linkHandler(entities.decodeHTML(node.attribs.href))
@@ -190,7 +191,7 @@ function htmlToElement(rawHtml, opts, done, context) {
             console.log(child.type)
             if(child.type == 'tag') {
               if(child.name == "ul") {
-                containsNestedList = true;                
+                containsNestedList = true;
               }
             }
           })
@@ -233,8 +234,13 @@ function htmlToElement(rawHtml, opts, done, context) {
           )
         }
 
+
+        var pStyles = null;
         if(node.name == 'p') {
           paddingTop = paddingTop / 2;
+          paddingBottom = paddingTop;
+
+          pStyles = opts.styles[node.name];
 
           //This is the place to get non-image Component types into the ScrollView
           if(node.children[0].name == 'img') {
@@ -269,7 +275,7 @@ function htmlToElement(rawHtml, opts, done, context) {
         return (
           <Text key={index}
                 onPress={linkPressHandler}
-                style={{paddingTop: paddingTop, backgroundColor: backgroundColor}}>
+                style={[{paddingTop: paddingTop, backgroundColor: backgroundColor, paddingBottom: paddingBottom}, pStyles]}>
             {node.name == 'pre' ? LINE_BREAK : null}
             {node.name == 'q' ? "\"" : null}
             {domToElement(node.children, node)}
